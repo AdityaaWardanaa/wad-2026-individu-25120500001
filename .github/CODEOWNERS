@@ -1,0 +1,10 @@
+# Berkas milik dosen. Perubahan pada berkas ini bukan bagian dari artefak yang dinilai,
+# dan mengubahnya agar verify.py menjadi hijau dihitung sebagai artefak yang tidak dapat
+# dipertahankan (Ketentuan 5).
+
+/verify.py            @pramudityad
+/Dockerfile           @pramudityad
+/.github/             @pramudityad
+/.gitignore           @pramudityad
+/.env.example         @pramudityad
+/docs/DEPLOY.md       @pramudityad

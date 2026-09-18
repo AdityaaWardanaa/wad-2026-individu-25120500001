@@ -1,0 +1,76 @@
+# CI — dijalankan pada tiap push dan pull request.
+# Berkas milik dosen. Jangan diubah (Ketentuan 5).
+#
+# Atur nomor sesi lewat repository variable `SESI` (Settings -> Secrets and variables ->
+# Actions -> Variables). Default: 2.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    name: verify.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Jalankan pemeriksa artefak
+        run: python verify.py --sesi ${{ vars.SESI || '2' }}
+
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Lewati bila backend belum ada
+        id: cek
+        run: |
+          if [ -f backend/requirements.txt ]; then echo "ada=true" >> "$GITHUB_OUTPUT";
+          else echo "ada=false" >> "$GITHUB_OUTPUT"; echo "backend/ belum dibuat — dilewati"; fi
+      - name: Install dependensi
+        if: steps.cek.outputs.ada == 'true'
+        run: pip install -r backend/requirements.txt
+      - name: Impor aplikasi (deteksi error sintaks & import)
+        if: steps.cek.outputs.ada == 'true'
+        working-directory: backend
+        run: python -c "from app.main import app; print('app ok')"
+      - name: pytest
+        if: steps.cek.outputs.ada == 'true' && hashFiles('backend/tests/**') != ''
+        working-directory: backend
+        run: pip install pytest httpx && pytest -q
+
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Lewati bila frontend belum ada
+        id: cek
+        run: |
+          if [ -f frontend/package.json ]; then echo "ada=true" >> "$GITHUB_OUTPUT";
+          else echo "ada=false" >> "$GITHUB_OUTPUT"; echo "frontend/ belum dibuat — dilewati"; fi
+      - name: Install dependensi
+        if: steps.cek.outputs.ada == 'true'
+        working-directory: frontend
+        run: npm install
+      - name: Build
+        if: steps.cek.outputs.ada == 'true'
+        working-directory: frontend
+        run: npm run build
+      - name: Test
+        if: steps.cek.outputs.ada == 'true'
+        working-directory: frontend
+        run: npm run test --if-present
