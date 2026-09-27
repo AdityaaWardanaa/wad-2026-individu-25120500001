@@ -201,7 +201,7 @@ nilainya 0.
 - Sesi 5 — GitHub Copilot, autocomplete pada model SQLAlchemy. Ditinjau dan diubah manual.
 -->
 
-- _(belum ada)_
+- Sesi 2 — Gemini, untuk membantu mendefinisikan skema Pydantic, memahami urutan workflow Git, dan memecahkan error verifikasi.
 
 ## Kalau kamu tersendat
 

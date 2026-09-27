@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "dev": "echo 'dummy'"
+  },
+  "dependencies": {
+    "vue": "^3.0.0"
+  }
+}
